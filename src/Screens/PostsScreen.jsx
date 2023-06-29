@@ -1,28 +1,28 @@
 import { Text } from "react-native";
-import { View } from "react-native";
-import { image, ImageBackground, StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 
-export default PostsScreen = () => (
-  <View style={styles.container}>
-    <Text>Публікації</Text>
-  </View>
-);
+export default PostsScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>Публікації</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 50,
     flex: 1,
+    height: 500,
+    backgroundColor: "#fff",
   },
-  image: {
-    flex: 1,
-    justifyContent: "center",
-  },
-  text: {
-    color: "black",
-    fontSize: 42,
-    lineHeight: 84,
-    fontWeight: "bold",
-    textAlign: "center",
-
+  header: {
     marginTop: 32,
+    color: "#212121",
+    fontSize: 30,
+    lineHeight: 35.16,
+    fontWeight: 500,
+    textAlign: "center",
+    marginBottom: 16,
   },
 });
