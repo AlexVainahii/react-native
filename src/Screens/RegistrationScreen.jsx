@@ -1,50 +1,121 @@
 import {
   Image,
   ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import image from "../../assets/background.jpg";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import IconImage from "../../assets/avatar.jpg";
+import { useState } from "react";
 
 export default RegistrationScreen = () => {
+  const [focusInput, setFocusInput] = useState(null);
+  const [isShowPass, setIsShowPass] = useState(false);
+  const [login, setLogin] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const toggleShowPass = () => {
+    setIsShowPass(!isShowPass);
+  };
+  const onFocus = (value) => {
+    setFocusInput(value);
+  };
+  const onBlur = () => {
+    setFocusInput(null);
+  };
+  const onSubmit = () => {
+    console.log("registerData :>> ", {
+      login,
+      email,
+      password,
+    });
+    setEmail("");
+    setLogin("");
+    setPassword("");
+  };
   return (
-    <View style={styles.container}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <View style={styles.containerReg}>
-          <View style={styles.containerIcon}>
-            <Image source={IconImage} alt="avatar" style={styles.avatar} />
-            <Icon name="add-circle" style={styles.icon} size={25} />
-          </View>
-          <Text style={styles.header}>Реєстрація</Text>
-          <View style={styles.containerInputs}>
-            <TextInput style={[styles.input]} placeholder="Логін" />
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+          <View style={styles.containerReg}>
+            <KeyboardAvoidingView
+              style={{ width: "100%" }}
+              behavior={Platform.OS == "ios" ? "padding" : "height"}
+            >
+              <View style={styles.containerIcon}>
+                <Image source={IconImage} alt="avatar" style={styles.avatar} />
+                <Icon name="add-circle" style={styles.icon} size={25} />
+              </View>
+              <Text style={styles.header}>Реєстрація</Text>
+              <View style={styles.containerInputs}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    focusInput === "Логін" && styles.focusInput,
+                  ]}
+                  placeholder="Логін"
+                  value={login}
+                  onChangeText={setLogin}
+                  onFocus={() => {
+                    onFocus("Логін");
+                  }}
+                  onBlur={onBlur}
+                />
 
-            <TextInput
-              style={[styles.input]}
-              placeholder="Адреса електронної пошти"
-            />
-            <View style={styles.containerPress}>
-              <TextInput style={[styles.input]} placeholder="Пароль" />
-              <Pressable>
-                <Text style={styles.press}>Показати</Text>
+                <TextInput
+                  style={[
+                    styles.input,
+                    focusInput === "Емейл" && styles.focusInput,
+                  ]}
+                  placeholder="Адреса електронної пошти"
+                  value={email}
+                  onChangeText={setEmail}
+                  onFocus={() => {
+                    onFocus("Емейл");
+                  }}
+                  onBlur={onBlur}
+                />
+                <View style={styles.containerPress}>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      focusInput === "Пароль" && styles.focusInput,
+                    ]}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!isShowPass}
+                    placeholder="Пароль"
+                    onFocus={() => {
+                      onFocus("Пароль");
+                    }}
+                    onBlur={onBlur}
+                  />
+                  <Pressable onPress={toggleShowPass}>
+                    <Text style={styles.press}>
+                      {!isShowPass ? "Показати" : "Приховати"}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+              <Pressable style={{ width: "100%" }} onPress={onSubmit}>
+                <Text style={styles.button}>Зареєструватися</Text>
               </Pressable>
-            </View>
+              <Pressable>
+                <Text style={styles.navLogIn}>Вже є акаунт? Увійти</Text>
+              </Pressable>
+            </KeyboardAvoidingView>
           </View>
-          <Pressable style={{ width: "100%" }}>
-            <Text style={styles.button}>Зареєструватися</Text>
-          </Pressable>
-          <Pressable>
-            <Text style={styles.navLogIn}>Вже є акаунт? Увійти</Text>
-          </Pressable>
-        </View>
-      </ImageBackground>
-    </View>
+        </ImageBackground>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({

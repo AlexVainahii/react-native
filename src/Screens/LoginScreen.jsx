@@ -1,41 +1,99 @@
 import {
   ImageBackground,
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
+  TouchableWithoutFeedback,
   View,
 } from "react-native";
 import image from "../../assets/background.jpg";
+import { useState } from "react";
 
 export default LoginScreen = () => {
+  const [focusInput, setFocusInput] = useState(null);
+  const [isShowPass, setIsShowPass] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const toggleShowPass = () => {
+    setIsShowPass(!isShowPass);
+  };
+  const onFocus = (value) => {
+    setFocusInput(value);
+  };
+  const onBlur = () => {
+    setFocusInput(null);
+  };
+  const onSubmit = () => {
+    console.log("loginData :>> ", {
+      email,
+      password,
+    });
+    setEmail("");
+    setPassword("");
+  };
   return (
-    <View style={styles.container}>
-      <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-        <View style={styles.containerLog}>
-          <Text style={styles.header}>Увійти</Text>
-          <View style={styles.containerInputs}>
-            <TextInput
-              style={[styles.input]}
-              placeholder="Адреса електронної пошти"
-            />
-            <View style={styles.containerPress}>
-              <TextInput style={[styles.input]} placeholder="Пароль" />
-              <Pressable>
-                <Text style={styles.press}>Показати</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <ImageBackground source={image} resizeMode="cover" style={styles.image}>
+          <View style={styles.containerLog}>
+            <KeyboardAvoidingView
+              style={{ width: "100%" }}
+              behavior={Platform.OS == "ios" ? "padding" : "height"}
+            >
+              <Text style={styles.header}>Увійти</Text>
+              <View style={styles.containerInputs}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    focusInput === "Емейл" && styles.focusInput,
+                  ]}
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="Адреса електронної пошти"
+                  onFocus={() => {
+                    onFocus("Емейл");
+                  }}
+                  onBlur={onBlur}
+                />
+                <View style={styles.containerPress}>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      focusInput === "Пароль" && styles.focusInput,
+                    ]}
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!isShowPass}
+                    placeholder="Пароль"
+                    onFocus={() => {
+                      onFocus("Пароль");
+                    }}
+                    onBlur={onBlur}
+                  />
+                  <Pressable onPress={toggleShowPass}>
+                    <Text style={styles.press}>
+                      {!isShowPass ? "Показати" : "Приховати"}
+                    </Text>
+                  </Pressable>
+                </View>
+              </View>
+              <Pressable style={{ width: "100%" }} onPress={onSubmit}>
+                <Text style={styles.button}>Увійти</Text>
               </Pressable>
-            </View>
+              <Pressable>
+                <Text style={styles.navLogIn}>
+                  Немає акаунту? Зареєструватися
+                </Text>
+              </Pressable>
+            </KeyboardAvoidingView>
           </View>
-          <Pressable style={{ width: "100%" }}>
-            <Text style={styles.button}>Увійти</Text>
-          </Pressable>
-          <Pressable>
-            <Text style={styles.navLogIn}>Немає акаунту? Зареєструватися</Text>
-          </Pressable>
-        </View>
-      </ImageBackground>
-    </View>
+        </ImageBackground>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 const styles = StyleSheet.create({
@@ -81,7 +139,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 16,
   },
-
+  focusInput: {
+    borderColor: "#FF6C00",
+    borderWidth: 1,
+  },
   containerPress: {
     width: "100%",
   },
