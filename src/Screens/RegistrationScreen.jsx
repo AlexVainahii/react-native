@@ -12,11 +12,12 @@ import {
   View,
 } from "react-native";
 import image from "../../assets/background.jpg";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { Feather } from "@expo/vector-icons";
 import IconImage from "../../assets/avatar.jpg";
 import { useState } from "react";
-
+import { useNavigation } from "@react-navigation/native";
 export default RegistrationScreen = () => {
+  const navigation = useNavigation();
   const [focusInput, setFocusInput] = useState(null);
   const [isShowPass, setIsShowPass] = useState(false);
   const [login, setLogin] = useState("");
@@ -37,6 +38,7 @@ export default RegistrationScreen = () => {
       email,
       password,
     });
+    navigation.navigate("Home");
     setEmail("");
     setLogin("");
     setPassword("");
@@ -45,14 +47,15 @@ export default RegistrationScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-          <View style={styles.containerReg}>
+          <View style={styles.containerForm}>
             <KeyboardAvoidingView
               style={{ width: "100%" }}
               behavior={Platform.OS == "ios" ? "padding" : "height"}
             >
               <View style={styles.containerIcon}>
                 <Image source={IconImage} alt="avatar" style={styles.avatar} />
-                <Icon name="add-circle" style={styles.icon} size={25} />
+                <Feather name="plus" style={styles.icon} size={25} />
+                <Feather name="circle" style={styles.iconC} size={25} />
               </View>
               <Text style={styles.header}>Реєстрація</Text>
               <View style={styles.containerInputs}>
@@ -108,7 +111,7 @@ export default RegistrationScreen = () => {
               <Pressable style={{ width: "100%" }} onPress={onSubmit}>
                 <Text style={styles.button}>Зареєструватися</Text>
               </Pressable>
-              <Pressable>
+              <Pressable onPress={() => navigation.navigate("Login")}>
                 <Text style={styles.navLogIn}>Вже є акаунт? Увійти</Text>
               </Pressable>
             </KeyboardAvoidingView>
@@ -126,7 +129,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
   },
-  containerReg: {
+  containerForm: {
     flex: 0,
     height: 549,
     paddingLeft: 16,
@@ -149,14 +152,24 @@ const styles = StyleSheet.create({
   },
   avatar: { borderRadius: 25 },
   icon: {
-    color: "#FFF",
+    color: "#FF6C00",
     borderRadius: 25,
-    backgroundColor: "#FF6C00",
+    backgroundColor: null,
     position: "absolute",
     bottom: 14,
     right: -12,
+    zIndex: 100,
   },
-
+  iconC: {
+    backgroundColor: "#FFF",
+    borderRadius: 25,
+    color: "#FFF",
+    borderWidth: 1,
+    borderColor: "#FF6C00",
+    position: "absolute",
+    bottom: 13,
+    right: -13,
+  },
   header: {
     marginTop: 92,
     color: "#212121",

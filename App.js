@@ -3,9 +3,12 @@ import { StyleSheet } from "react-native";
 import RegistrationScreen from "./src/Screens/RegistrationScreen";
 import { useFonts } from "expo-font";
 import LoginScreen from "./src/Screens/LoginScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import PostsScreen from "./src/Screens/PostsScreen";
-
+import Home from "./src/Screens/Home";
+import CreatePostsScreen from "./src/Screens/CreatePostsScreen";
+const MainStack = createStackNavigator();
 export default function App() {
   const [fontsLoaded] = useFonts({
     "Inter-Medium": require("./assets/fonts/Inter-Medium.ttf"),
@@ -17,11 +20,16 @@ export default function App() {
     return null;
   }
   return (
-    <>
-      {/* <LoginScreen /> */}
-      <RegistrationScreen />
-      {/* <PostsScreen /> */}
-    </>
+    <NavigationContainer>
+      <MainStack.Navigator
+        initialRouteName="Login"
+        screenOptions={{ headerShown: false }}
+      >
+        <MainStack.Screen name="Register" component={RegistrationScreen} />
+        <MainStack.Screen name="Login" component={LoginScreen} />
+        <MainStack.Screen name="Home" component={Home} />
+      </MainStack.Navigator>
+    </NavigationContainer>
   );
 }
 

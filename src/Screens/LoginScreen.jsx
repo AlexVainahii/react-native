@@ -12,8 +12,9 @@ import {
 } from "react-native";
 import image from "../../assets/background.jpg";
 import { useState } from "react";
-
+import { useNavigation } from "@react-navigation/native";
 export default LoginScreen = () => {
+  const navigation = useNavigation();
   const [focusInput, setFocusInput] = useState(null);
   const [isShowPass, setIsShowPass] = useState(false);
   const [email, setEmail] = useState("");
@@ -32,6 +33,7 @@ export default LoginScreen = () => {
       email,
       password,
     });
+    navigation.navigate("Home");
     setEmail("");
     setPassword("");
   };
@@ -39,9 +41,11 @@ export default LoginScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <ImageBackground source={image} resizeMode="cover" style={styles.image}>
-          <View style={styles.containerLog}>
+          <View style={styles.containerForm}>
             <KeyboardAvoidingView
-              style={{ width: "100%" }}
+              style={{
+                width: "100%",
+              }}
               behavior={Platform.OS == "ios" ? "padding" : "height"}
             >
               <Text style={styles.header}>Увійти</Text>
@@ -81,15 +85,15 @@ export default LoginScreen = () => {
                   </Pressable>
                 </View>
               </View>
-              <Pressable style={{ width: "100%" }} onPress={onSubmit}>
-                <Text style={styles.button}>Увійти</Text>
-              </Pressable>
-              <Pressable>
-                <Text style={styles.navLogIn}>
-                  Немає акаунту? Зареєструватися
-                </Text>
-              </Pressable>
             </KeyboardAvoidingView>
+            <Pressable style={{ width: "100%" }} onPress={onSubmit}>
+              <Text style={styles.button}>Увійти</Text>
+            </Pressable>
+            <Pressable onPress={() => navigation.navigate("Register")}>
+              <Text style={styles.navLogIn}>
+                Немає акаунту? Зареєструватися
+              </Text>
+            </Pressable>
           </View>
         </ImageBackground>
       </View>
@@ -104,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-end",
   },
-  containerLog: {
+  containerForm: {
     flex: 0,
     height: 489,
     paddingLeft: 16,
