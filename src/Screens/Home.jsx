@@ -1,19 +1,38 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import PostsScreen from "./PostsScreen";
-import { useNavigation } from "@react-navigation/native";
+import {
+  useNavigation,
+  getFocusedRouteNameFromRoute,
+  useRoute,
+} from "@react-navigation/native";
 import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
 import { View } from "react-native";
 import { TouchableOpacity } from "react-native";
+import { useRef, useState } from "react";
 
 const Tabs = createBottomTabNavigator();
 
 export default function Home() {
   const navigation = useNavigation();
+  const route = useRoute();
+  const focusedRouteName = getFocusedRouteNameFromRoute(route);
+  const prevFocusedRouteNameRef = useRef(null);
+  const [back, setBack] = useState(null);
+  if (prevFocusedRouteNameRef.current !== focusedRouteName) {
+    setBack(prevFocusedRouteNameRef.current);
+    prevFocusedRouteNameRef.current = focusedRouteName;
+  }
+
   const onLogout = () => {
     navigation.navigate("Login");
   };
+
+  const onBack = () => {
+    back ? navigation.navigate(back) : navigation.navigate("Публікації");
+  };
+
   return (
     <Tabs.Navigator
       screenOptions={({ route }) => ({
@@ -33,6 +52,7 @@ export default function Home() {
         ],
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
+
           if (route.name === "Публікації") {
             iconName = "grid";
           } else if (route.name === "Створити публікацію") {
@@ -65,6 +85,7 @@ export default function Home() {
         component={PostsScreen}
         options={{
           headerTitleAlign: "center",
+
           headerRight: () => (
             <TouchableOpacity onPress={onLogout}>
               <Feather
@@ -82,6 +103,17 @@ export default function Home() {
         component={CreatePostsScreen}
         options={{
           headerTitleAlign: "center",
+          tabBarStyle: { display: "none" },
+          headerLeft: () => (
+            <TouchableOpacity onPress={onBack}>
+              <Feather
+                name="arrow-left"
+                size={24}
+                color="#21212180"
+                style={{ marginLeft: 16 }}
+              />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tabs.Screen

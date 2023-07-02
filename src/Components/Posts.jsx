@@ -3,15 +3,30 @@ import { ScrollView } from "react-native";
 import { StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
-import IconImage from "../../assets/avatar.jpg";
 import { generateDataArray } from "../helpers";
 import { useState } from "react";
 import { FlatList } from "react-native";
-import { SafeAreaView } from "react-native";
+import { TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default Posts = ({ filter }) => {
-  const [randomPosts, setRandomPosts] = useState(generateDataArray(10, filter));
-  const userEmail = `email${5}@example.com`;
+  const navigation = useNavigation();
+  const [randomPosts, setRandomPosts] = useState(generateDataArray(20, filter));
+  const userEmail = `email${2}@example.com`;
+  const onToggleLike = (item) => {
+    let newItem = {};
+    let newEmails = [];
+    if (item.emails.includes(userEmail)) {
+      newEmails = item.emails.filter((email) => email !== userEmail);
+      newItem = { ...item, emails: newEmails };
+    } else {
+      newItem = { ...item, emails: [...item.emails, userEmail] };
+    }
+    const newPosts = randomPosts.map((post) =>
+      post.id === item.id ? newItem : post
+    );
+    setRandomPosts(newPosts);
+  };
 
   return (
     <ScrollView style={styles.containerPosts} decelerationRate="fast">
@@ -42,6 +57,9 @@ export default Posts = ({ filter }) => {
                         name="message-circle"
                         size={24}
                         color={item.comments.length > 0 ? "#FF6C00" : "#BDBDBD"}
+                        onPress={() =>
+                          navigation.navigate("Коментарі", { item })
+                        }
                       />
                     </View>
                     <Text style={styles.numbers}>{item.comments.length}</Text>
@@ -52,19 +70,28 @@ export default Posts = ({ filter }) => {
                       color={
                         item.emails.includes(userEmail) ? "#FF6C00" : "#BDBDBD"
                       }
+                      onPress={() => onToggleLike(item)}
                     />
                     <Text style={styles.numbers}>{item.emails.length}</Text>
                   </View>
                 </View>
               </View>
               <View style={styles.containerLocation}>
-                <Feather name="map-pin" size={24} color="#BDBDBD" />
-                <Text style={styles.location}>Україна</Text>
+                <TouchableOpacity
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                  onPress={() => navigation.navigate("Карта", { item })}
+                >
+                  <Feather name="map-pin" size={24} color="#BDBDBD" />
+                  <Text style={styles.location}>Україна</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
         )}
-        ItemSeparatorComponent={<View style={{ height: 32 }} />}
         scrollEnabled={false}
         removeClippedSubviews={true}
       />
@@ -82,6 +109,7 @@ const styles = StyleSheet.create({
     height: 299,
     width: "100%",
     backgroundColor: null,
+    marginBottom: 32,
   },
   imagePost: {
     borderRadius: 8,

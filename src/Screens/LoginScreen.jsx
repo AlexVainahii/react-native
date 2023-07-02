@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 16,
     textAlign: "center",
-    height: 50,
+    height: 51,
     borderRadius: 32,
     color: "white",
     fontSize: 16,

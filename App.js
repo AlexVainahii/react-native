@@ -7,7 +7,8 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 import Home from "./src/Screens/Home";
-import CreatePostsScreen from "./src/Screens/CreatePostsScreen";
+import MapScreen from "./src/Screens/MapScreen";
+import CommentsScreen from "./src/Screens/CommentsScreen";
 const MainStack = createStackNavigator();
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -28,6 +29,16 @@ export default function App() {
         <MainStack.Screen name="Register" component={RegistrationScreen} />
         <MainStack.Screen name="Login" component={LoginScreen} />
         <MainStack.Screen name="Home" component={Home} />
+        <MainStack.Screen
+          name="Карта"
+          options={{ headerShown: true }}
+          component={MapScreen}
+        />
+        <MainStack.Screen
+          name="Коментарі"
+          options={{ headerShown: true }}
+          component={CommentsScreen}
+        />
       </MainStack.Navigator>
     </NavigationContainer>
   );
