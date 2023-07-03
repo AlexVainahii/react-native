@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { View } from "react-native";
 import { generateDataArray } from "../helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList } from "react-native";
 import { TouchableOpacity } from "react-native";
 import { useNavigation } from "@react-navigation/native";
@@ -27,7 +27,20 @@ export default Posts = ({ filter }) => {
     );
     setRandomPosts(newPosts);
   };
-
+  const addComnt = (item, data) => {
+    console.log("data :>> ", data);
+    console.log("itemF :>> ", item);
+    const newItem = { ...item, comments: [...item.comments, data] };
+    console.log("itemF :>> ", newItem);
+    const newPosts = randomPosts.map((post) =>
+      post.id === item.id ? newItem : post
+    );
+  };
+  useEffect(() => {
+    if (randomPosts.length > 0) {
+      console.log("hello :>> ");
+    }
+  }, [randomPosts]);
   return (
     <ScrollView style={styles.containerPosts} decelerationRate="fast">
       <FlatList
@@ -57,9 +70,12 @@ export default Posts = ({ filter }) => {
                         name="message-circle"
                         size={24}
                         color={item.comments.length > 0 ? "#FF6C00" : "#BDBDBD"}
-                        onPress={() =>
-                          navigation.navigate("Коментарі", { item })
-                        }
+                        onPress={() => {
+                          navigation.navigate("Коментарі", {
+                            item,
+                            userEmail,
+                          });
+                        }}
                       />
                     </View>
                     <Text style={styles.numbers}>{item.comments.length}</Text>

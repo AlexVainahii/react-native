@@ -1,7 +1,7 @@
 import { useRoute } from "@react-navigation/native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet } from "react-native";
-import { Pressable } from "react-native";
+import { v4 as uuidv4 } from "uuid";
 import { Text } from "react-native";
 import { TextInput } from "react-native";
 import { Image } from "react-native";
@@ -12,114 +12,123 @@ import { View } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { ScrollView } from "react-native";
 import { FlatList } from "react-native";
+import { SafeAreaView } from "react-native";
 
 export default CommentsScreen = () => {
   const route = useRoute();
   const item = route.params.item;
+  const userEmail = route.params.userEmail;
+
   const { comments } = item;
+  const [newComment, setNewComment] = useState("");
+  function getCurrentDate() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  // Функція для отримання поточного часу
+  function getCurrentTime() {
+    const currentDate = new Date();
+    const hours = String(currentDate.getHours()).padStart(2, "0");
+    const minutes = String(currentDate.getMinutes()).padStart(2, "0");
+    const seconds = String(currentDate.getSeconds()).padStart(2, "0");
+    return `${hours}:${minutes}:${seconds}`;
+  }
+  const onAddComment = () => {
+    const newComments = {
+      date: getCurrentDate(),
+      email: userEmail,
+      id: uuidv4(),
+
+      avatarUrl: `https://source.unsplash.com/random/350x240?nature`,
+      time: getCurrentTime(),
+      comment: newComment,
+    };
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <View style={styles.container}>
-        <View style={{ width: "100%" }}>
-          <View style={styles.imagePost}>
+      <SafeAreaView style={{ width: "100%", flex: 1 }}>
+        <View style={styles.container}>
+          <View style={{ width: "100%", height: 240 }}>
             <Image
               source={{ uri: `${item.photoUrl}` }}
               alt={`${item.description}`}
               style={styles.imagePost}
             />
           </View>
-        </View>
-        <ScrollView style={styles.containerPosts} decelerationRate="fast">
-          <FlatList
-            data={comments}
-            keyExtractor={(comment) => comment.id}
-            renderItem={({ comment }) => (
-              <View style={styles.containerPost}>
-                <Image
-                  source={{ uri: `${comment.avatarUrl}` }}
-                  alt={`${comment.email}`}
-                  style={styles.imagePost}
-                />
-                {/* <View
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "flex-end",
-                  }}
+          <ScrollView style={styles.containerComments} decelerationRate="fast">
+            <FlatList
+              data={comments}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <View
+                  style={[
+                    styles.containerComment,
+                    {
+                      flexDirection:
+                        userEmail === item.email ? "row-reverse" : "row",
+                    },
+                  ]}
                 >
-                  <View>
-                    <Text style={styles.imageTitle}>{item.description}</Text>
-                    <View style={styles.containerIcons}>
-                      <View style={styles.containerIcon}>
-                        <View>
-                          <Feather
-                            name="message-circle"
-                            size={24}
-                            color={
-                              item.comments.length > 0 ? "#FF6C00" : "#BDBDBD"
-                            }
-                            onPress={() =>
-                              navigation.navigate("Коментарі", { item })
-                            }
-                          />
-                        </View>
-                        <Text style={styles.numbers}>
-                          {item.comments.length}
-                        </Text>
-                        <Feather
-                          name="thumbs-up"
-                          size={24}
-                          style={styles.icons}
-                          color={
-                            item.emails.includes(userEmail)
-                              ? "#FF6C00"
-                              : "#BDBDBD"
-                          }
-                          onPress={() => onToggleLike(item)}
-                        />
-                        <Text style={styles.numbers}>{item.emails.length}</Text>
-                      </View>
-                    </View>
-                  </View>
-                  <View style={styles.containerLocation}>
-                    <TouchableOpacity
-                      style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        alignItems: "center",
-                      }}
-                      onPress={() => navigation.navigate("Карта", { item })}
+                  <Image
+                    source={{ uri: item.avatarUrl }}
+                    alt={`${item.id}`}
+                    style={styles.avatar}
+                  />
+                  <View
+                    style={[
+                      styles.containerText,
+                      {
+                        marginLeft: userEmail === item.email ? 0 : 16,
+                        marginRight: userEmail === item.email ? 16 : 0,
+                        borderTopLeftRadius: userEmail === item.email ? 6 : 0,
+                        borderTopRightRadius: userEmail === item.email ? 0 : 6,
+                      },
+                    ]}
+                  >
+                    <Text style={styles.text}>{item.comment}</Text>
+
+                    <Text
+                      style={[
+                        styles.textDate,
+                        {
+                          textAlign:
+                            userEmail === item.email ? "left" : "right",
+                        },
+                      ]}
                     >
-                      <Feather name="map-pin" size={24} color="#BDBDBD" />
-                      <Text style={styles.location}>Україна</Text>
-                    </TouchableOpacity>
+                      {item.date} | {item.time}
+                    </Text>
                   </View>
-                </View> */}
-              </View>
-            )}
-            scrollEnabled={false}
-            removeClippedSubviews={true}
-          />
-        </ScrollView>
-        <KeyboardAvoidingView
-          style={{ width: "100%" }}
-          behavior={Platform.OS == "ios" ? "padding" : "height"}
-        >
-          <View>
-            <Pressable style={{ width: "100%" }}>
-              <TextInput style={styles.button} placeholder="Коментувати..." />
-            </Pressable>
+                </View>
+              )}
+              scrollEnabled={false}
+              removeClippedSubviews={true}
+            />
+          </ScrollView>
+
+          <View style={styles.containerInput}>
+            <TextInput
+              style={styles.button}
+              placeholder="Коментувати..."
+              value={newComment}
+              onChangeText={setNewComment}
+            />
 
             <Ionicons
               name="arrow-up-circle"
               size={34}
               color="#FF6C00"
               style={styles.icon}
+              onPress={() => onAddComment()}
             />
           </View>
-        </KeyboardAvoidingView>
-      </View>
+        </View>
+      </SafeAreaView>
     </TouchableWithoutFeedback>
   );
 };
@@ -133,35 +142,56 @@ const styles = StyleSheet.create({
     paddingRight: 16,
     paddingTop: 32,
   },
+
   imagePost: {
-    width: 28,
-    height: 28,
+    width: "100%",
+    flex: 1,
     backgroundColor: "#F8F8F8",
-    textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 32,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
 
     borderRadius: 8,
   },
-  circle: {
-    height: 60,
-    width: 60,
+
+  containerComments: {
+    backgroundColor: "#fff",
+    width: "100%",
+    height: 296,
+    marginBottom: 31,
+  },
+  containerComment: {
     display: "flex",
-    justifyContent: "center",
-    borderRadius: 60,
-    alignItems: "center",
-    backgroundColor: "#FFFFFF",
+    height: 103,
+    marginBottom: 24,
+  },
+  avatar: { width: 28, height: 28, borderRadius: 28 },
+  containerText: {
+    padding: 16,
+    height: "100%",
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.03)",
+    borderRadius: 6,
   },
   text: {
-    width: 131,
-    height: 19,
-    color: "#BDBDBD",
-    fontSize: 16,
-    fontWeight: 400,
-    lineHeight: 18.75,
+    width: "100%",
+    height: 52,
+    color: "#212121",
+    fontSize: 13,
+    fontWeight: "400",
+    lineHeight: 18,
   },
+  textDate: {
+    width: "100%",
+    height: 11,
+    color: "#BDBDBD",
+    fontSize: 10,
+    fontWeight: "400",
+    lineHeight: 11.72,
+    marginTop: 8,
+  },
+
   textInput: {
     width: "100%",
     color: "#212121",
@@ -174,34 +204,22 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     lineHeight: 18.75,
     marginTop: 32,
+    flex: 1,
   },
-  textLocation: {
-    width: "100%",
-    color: "#212121",
-    fontSize: 16,
-    height: 50,
-    paddingBottom: 15,
-    paddingTop: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: "#E8E8E8",
-    fontWeight: "400",
-    lineHeight: 18.75,
-    paddingLeft: 28,
-  },
+  containerInput: { flex: 1, width: "100%", marginBottom: 46 },
   icon: {
     position: "absolute",
     top: "50%",
     right: 2,
-    transform: [{ translateY: -3 }],
+    transform: [{ translateY: -6 }],
   },
   button: {
     width: "100%",
     padding: 16,
-    marginTop: 32,
 
     height: 51,
     borderRadius: 32,
-    color: "#BDBDBD",
+    color: "#212121",
     fontSize: 16,
     lineHeight: 18.75,
     fontWeight: "400",
