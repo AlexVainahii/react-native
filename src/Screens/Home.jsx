@@ -115,6 +115,7 @@ export default function Home() {
             </TouchableOpacity>
           ),
         }}
+        initialParams={null}
       />
       <Tabs.Screen
         name="Користувач"

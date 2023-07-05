@@ -99,7 +99,12 @@ export default Posts = ({ filter }) => {
                     flexDirection: "row",
                     alignItems: "center",
                   }}
-                  onPress={() => navigation.navigate("Карта", { item })}
+                  onPress={() =>
+                    navigation.navigate("Карта", {
+                      item,
+                      isCurrentLocation: false,
+                    })
+                  }
                 >
                   <Feather name="map-pin" size={24} color="#BDBDBD" />
                   <Text style={styles.location}>Україна</Text>

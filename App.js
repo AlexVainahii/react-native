@@ -31,7 +31,7 @@ export default function App() {
         <MainStack.Screen name="Home" component={Home} />
         <MainStack.Screen
           name="Карта"
-          options={{ headerShown: true }}
+          options={{ headerShown: true, headerTitleAlign: "center" }}
           component={MapScreen}
         />
         <MainStack.Screen
