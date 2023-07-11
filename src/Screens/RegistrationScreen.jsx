@@ -12,10 +12,13 @@ import {
   View,
 } from "react-native";
 import image from "../../assets/background.jpg";
-import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import IconImage from "../../assets/avatar.jpg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
+import * as MediaLibrary from "expo-media-library";
+import * as ImagePicker from "expo-image-picker";
+import { TouchableOpacity } from "react-native";
 export default RegistrationScreen = () => {
   const navigation = useNavigation();
   const [focusInput, setFocusInput] = useState(null);
@@ -23,6 +26,39 @@ export default RegistrationScreen = () => {
   const [login, setLogin] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [hasLibraryPermission, setHasLibraryPermission] = useState(null);
+  const [photo, setPhoto] = useState("");
+  useEffect(() => {
+    (async () => {
+      const { status } =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasLibraryPermission(status === "granted");
+    })();
+  }, []);
+
+  if (hasLibraryPermission === null) {
+    return <View />;
+  }
+  if (hasLibraryPermission === false) {
+    return <Text>No access to library</Text>;
+  }
+  const openImagePicker = async () => {
+    if (photo) {
+      setPhoto(null);
+      return;
+    }
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    });
+
+    if (pickerResult.canceled === true) {
+      return;
+    }
+    setPhoto(pickerResult.assets[0].uri);
+  };
   const toggleShowPass = () => {
     setIsShowPass(!isShowPass);
   };
@@ -53,9 +89,34 @@ export default RegistrationScreen = () => {
               behavior={Platform.OS == "ios" ? "padding" : "height"}
             >
               <View style={styles.containerIcon}>
-                <Image source={IconImage} alt="avatar" style={styles.avatar} />
-                <Feather name="plus" style={styles.icon} size={25} />
-                <Feather name="circle" style={styles.iconC} size={25} />
+                <Image
+                  source={photo ? { uri: photo } : IconImage}
+                  alt="avatar"
+                  style={styles.avatar}
+                />
+                <TouchableOpacity
+                  style={[
+                    styles.contButton,
+                    photo ? { borderColor: "#BDBDBD" } : null,
+                  ]}
+                  onPress={openImagePicker}
+                >
+                  <AntDesign
+                    name="pluscircleo"
+                    style={[
+                      styles.icon,
+                      photo
+                        ? {
+                            color: "#BDBDBD",
+                            bottom: 0,
+                            right: 0,
+                            transform: [{ rotate: "45deg" }],
+                          }
+                        : null,
+                    ]}
+                    size={25}
+                  />
+                </TouchableOpacity>
               </View>
               <Text style={styles.header}>Реєстрація</Text>
               <View style={styles.containerInputs}>
@@ -150,26 +211,24 @@ const styles = StyleSheet.create({
     position: "absolute",
     backgroundColor: "#F6F6F6",
   },
-  avatar: { borderRadius: 25 },
+  avatar: { borderRadius: 25, height: 120, width: 120 },
+  contButton: {
+    width: 25,
+    height: 25,
+    position: "absolute",
+    bottom: 14,
+    right: -12,
+    backgroundColor: "#FFF",
+    borderRadius: 25,
+    borderWidth: 0,
+  },
   icon: {
     color: "#FF6C00",
     borderRadius: 25,
     backgroundColor: null,
     position: "absolute",
-    bottom: 14,
-    right: -12,
-    zIndex: 100,
   },
-  iconC: {
-    backgroundColor: "#FFF",
-    borderRadius: 25,
-    color: "#FFF",
-    borderWidth: 1,
-    borderColor: "#FF6C00",
-    position: "absolute",
-    bottom: 13,
-    right: -13,
-  },
+
   header: {
     marginTop: 92,
     color: "#212121",
